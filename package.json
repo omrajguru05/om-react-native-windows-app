@@ -1,0 +1,31 @@
+{
+  "name": "om-react-native-windows-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Om Native Desktop Companion for Windows & macOS",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "start": "react-native start",
+    "windows": "react-native run-windows",
+    "macos": "react-native run-macos",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-macos": "0.74.15",
+    "react-native-web": "^0.19.13",
+    "react-native-windows": "0.74.31"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@types/react-native": "^0.73.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0"
+  }
+}

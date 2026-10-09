@@ -1,0 +1,16 @@
+{
+  "name": "OmDesktop",
+  "displayName": "Om",
+  "version": "1.0.0",
+  "author": "Om",
+  "windows": {
+    "project": {
+      "projectFile": "windows/om-desktop/om-desktop.vcxproj"
+    }
+  },
+  "macos": {
+    "project": {
+      "projectFile": "macos/om-desktop.xcodeproj"
+    }
+  }
+}

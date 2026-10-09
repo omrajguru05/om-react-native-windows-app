@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production output
+dist/
+build/
+bin/
+obj/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE Files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Windows artifacts
+windows/**/AppPackages/
+windows/**/Bundle/
+windows/**/Generated Files/
+
+# macOS artifacts
+macos/Pods/
+macos/**/build/
+macos/**/DerivedData/
