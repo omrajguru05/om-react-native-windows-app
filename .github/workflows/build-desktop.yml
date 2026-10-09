@@ -1,0 +1,114 @@
+name: Build Desktop Applications (Windows & macOS)
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows Application (.exe & Portable)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile and Package Windows App
+        run: npm run dist:win
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-application-build
+          path: release/*.exe
+          if-no-files-found: error
+
+  build-macos:
+    name: Build macOS Application (.dmg & .zip)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile and Package macOS App
+        run: npm run dist:mac
+
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-application-build
+          path: |
+            release/*.dmg
+            release/*.zip
+          if-no-files-found: error
+
+  create-release:
+    name: Publish GitHub Release
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-application-build
+          path: release-artifacts/windows
+
+      - name: Download macOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-application-build
+          path: release-artifacts/macos
+
+      - name: Generate Release Tag
+        id: tag
+        run: echo "TAG_NAME=v1.0.$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release with Binaries
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
+          name: Om Desktop ${{ steps.tag.outputs.TAG_NAME }}
+          body: |
+            ## Native Desktop Companion for Windows & macOS
+            
+            Compiled automatically via GitHub Actions:
+            * **Windows Installer**: `.exe` setup & portable execution
+            * **macOS Disk Image**: `.dmg` package & `.zip`
+            * 93 articles bundled offline with instant zero-latency loading
+            * Full dark theme with Relative variable typography and audio narration
+          files: |
+            release-artifacts/windows/*.exe
+            release-artifacts/macos/*.dmg
+            release-artifacts/macos/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
