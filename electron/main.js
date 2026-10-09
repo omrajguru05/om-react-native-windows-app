@@ -6,6 +6,8 @@ let mainWindow = null;
 function createWindow() {
   Menu.setApplicationMenu(null); // Remove default browser-style menu bar
 
+  const isMac = process.platform === "darwin";
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 820,
@@ -13,10 +15,9 @@ function createWindow() {
     minHeight: 580,
     title: "Om",
     backgroundColor: "#000000",
-    frame: false, // Frameless custom dark title bar matching om-design and Windows 11
-    titleBarStyle: "hidden",
-    titleBarOverlay: false,
-    show: false,
+    frame: false,
+    ...(isMac ? { titleBarStyle: "hiddenInset" } : {}),
+    show: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
@@ -54,6 +55,22 @@ function createWindow() {
     console.log(`[Renderer ${level}] ${message} (${sourceId}:${line})`);
   });
 
+  mainWindow.webContents.on("did-finish-load", async () => {
+    if (!app.isPackaged) {
+      try {
+        setTimeout(async () => {
+          if (mainWindow) {
+            const image = await mainWindow.webContents.capturePage();
+            const previewPath = path.join(__dirname, "../preview.png");
+            fs.writeFileSync(previewPath, image.toPNG());
+          }
+        }, 800);
+      } catch (_err) {
+        // Ignored in dev
+      }
+    }
+  });
+
   // Load the production build if available, else localhost
   const distPath = path.join(__dirname, "../dist/index.html");
   const fs = require("fs");
@@ -63,10 +80,7 @@ function createWindow() {
     mainWindow.loadURL("http://localhost:3000");
   }
 
-  mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
-    mainWindow.focus();
-  });
+  mainWindow.focus();
 
   mainWindow.on("closed", () => {
     mainWindow = null;
