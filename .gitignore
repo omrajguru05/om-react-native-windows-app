@@ -8,6 +8,8 @@ dist/
 build/
 bin/
 obj/
+release/
+release-binaries/
 
 # Logs
 logs

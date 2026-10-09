@@ -46,6 +46,14 @@ function createWindow() {
     return mainWindow?.isMaximized() ?? false;
   });
 
+  mainWindow.webContents.on("did-fail-load", (_e, errorCode, errorDescription) => {
+    console.error("Failed to load window:", errorCode, errorDescription);
+  });
+
+  mainWindow.webContents.on("console-message", (_event, level, message, line, sourceId) => {
+    console.log(`[Renderer ${level}] ${message} (${sourceId}:${line})`);
+  });
+
   // Load the production build if available, else localhost
   const distPath = path.join(__dirname, "../dist/index.html");
   const fs = require("fs");
